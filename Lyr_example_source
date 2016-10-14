@@ -1,0 +1,334 @@
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+			<head>
+            <meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>
+            <meta name='keywords' content='game, rpg, mmorpg, pbbg, gamer, fantasy, role playing, browser based'><link href='css/main.css' rel='stylesheet' type='text/css'><link href='css/main10.css' rel='stylesheet' type='text/css'>
+            <link rel='shortcut icon' href='favicon.ico'>
+            <title>Lyrania 2.1</title>
+            <script type='text/javascript' src='main.js?t=1476464727'></script>
+            <script type='text/javascript' src='glt.js?t=1476464727'></script>
+            <script type='text/javascript' src='https://www.google.com/recaptcha/api/js/recaptcha_ajax.js'></script>
+			<script src='//code.jquery.com/jquery-1.11.0.min.js'></script>
+			<script src='//code.jquery.com/jquery-migrate-1.2.1.min.js'></script>
+            <script type='text/javascript'>
+            function online() {
+                $.post('commands.php',{ x: 'online', sessionid: '727', unqid: '5801105769b0c' }, function(responseText) {
+                            var xyz = responseText.split('[BREAK]');
+                            $('#onlinecount').html(xyz[0]);
+                            for(i=1;i<xyz.length;i++) {
+                                eval(xyz[i]);
+                            }
+                });
+            }
+            var actionprogress = 0;
+            function battle(arg,arg2,mob,mobname) {
+                if(document.getElementById('capt')) {
+                    verify();
+                } else {
+					var mob = $('#mob').val();
+					var mobname = $('#mob option:selected').text();
+					if (fighting == 0) {
+						fighting = 1;
+						$.post('battle.php', { t: 0, check: arg2, mob:mob, mobname:mobname },
+						function(result) {
+							fighting = 0;
+							document.getElementById('mainnav').options[0].selected=true;
+							 if(document.getElementById('bb')) {
+								document.getElementById('bb').disabled=true;
+							}
+							timer2(2000);
+							actionprogress=0;
+							var xyz = result.split('[BREAK]');
+							$('#content').html(xyz[0]); //Update the HTML Form element
+							for(i=1;i<xyz.length;i++) {
+								eval(xyz[i]);
+							}
+						});
+					}
+				}
+            }
+            function mainnav() {
+                closebanner();
+                var navx = document.getElementById('mainnav').value;
+                if(navx == 1) {//Battle
+                    nav('battle');
+                }
+                if(navx == 2) {//Quests
+                    quest(0,0);
+                }
+                if(navx == 3) {
+					market(0,0,0,0,0,0);
+                }
+                if(navx == 4) {//Guild
+                    guildpage(0);
+                }
+                if(navx == 5) {//Inventory
+                    inventory(0,0,0,'name&order=ASC');
+                }
+                if(navx == 6) {//Crafting
+                    nav('craft');
+                }
+                if(navx == 7) {//Tradeskills
+                    tradeskills(0);
+                }
+                if(navx == 8) {//Travel
+                    travel(0);
+                }
+                if(navx == 9) {//Bosses
+                    boss(0);
+                }
+                if(navx == 10) {//Milestones
+                    nav('milestones');
+                }
+                if(navx == 11) {//Settings
+                    nav('settings');
+                }
+                if(navx == 12) {//Log
+                    slog(0);
+                }
+                if(navx == 13) {//Dungeon Shop
+                    dshop(0);
+                }
+                if(navx == 14) {//Post Office
+                    post(0);
+                }
+                if(navx == 15) {//Casino
+                    casino(0);
+                }
+				if(navx == 16) {//Colosseum
+					colosseum(0);
+				}
+				if(navx == 17) {//Church
+					church(0);
+				}
+				if(navx == 18) {//Housing
+					house(3);
+				}
+				if(navx == 19) {//Temple
+				    temple(0);
+				}
+				if(navx == 20) {//Support Tickets
+					support(0);
+				}
+				if(navx == 21) {//pets
+					pet(0);
+				}
+            }
+            var chatarray = new Array();
+            chatarray.length=200;
+            var visarray = new Array();
+            function chat() {
+                var ts = new Date();
+				var s = ts.getTime();
+                $.post('chat.php', { lt : s },
+				function(result) {
+					var xyz = result.split('<br />');
+					xyz.reverse();
+					for(i=0;i<xyz.length;i++) {
+						if(xyz[i]!='') {
+							chatarray.splice(chatarray.length,0,xyz[i]);
+							chatarray.splice(0,1);
+						}
+					}
+					var chattext = '';
+					for(i=0;i<chatarray.length;i++) {
+						if(chatarray[i] != undefined) {
+							chattext = chatarray[i]+'<br />'+chattext;
+						}
+					}
+					document.getElementById('chatwindow').innerHTML=chattext;
+					for(i=0;i<visarray.length;i++) {
+						document.getElementById(visarray[i]).style.visibility='visible';
+					}
+
+				}).always(function() { chattimer = setTimeout(function() { chat(); },1000); } );
+            }
+            function startchat() {
+                newchatxmlhttp.open('POST','chat.php',true);
+                newchatxmlhttp.onreadystatechange = function () {
+                    if (newchatxmlhttp.readyState == 4) {
+                        if(newchatxmlhttp.status == 200) {
+                            var xyz = newchatxmlhttp.responseText.split('<br />');
+                            xyz.reverse();
+                            for(i=0;i<(xyz.length);i++) {
+                                if(xyz[i]!='') {
+                                    chatarray.splice(chatarray.length,0,xyz[i]);
+                                    chatarray.splice(0,1);
+                                }
+                            }
+                            var chattext = '';
+                            for(i=0;i<chatarray.length;i++) {
+                                chattext = chatarray[i]+'<br />'+chattext;
+                            }
+                            document.getElementById('chatwindow').innerHTML=chattext;
+                            chat();
+                        }
+                    }
+                }
+                newchatxmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                newchatxmlhttp.send('lt=0');
+            }document.addEventListener('DOMContentLoaded', function(ev) {
+	    ev.stopPropagation();
+	}, false);
+	window.addEventListener = null;
+            </script>
+			</head>
+            <body onload='nav("battle");startchat();online();document.getElementById("musicboxbox").innerHTML="<audio id=\"magicmusicbox\" async=\"async\" src=\"http://67.248.9.219:8000/stream.mp3\"></audio>";'>
+            <div id='holder'>
+            <div id='popupholder'>
+            <span style='float:right;font-size:15px;font-weight:bold;'><a href='javascript:closepage();'><font color='#EEEEEE'>[X]</font></a></span><br /><br />
+            <div id='popup'></div>
+            <div id='popupresponse'></div>
+            </div>
+            <div id='header'>
+			<div id='schemediv1'></div>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:10px;top:10px;text-align:right;font-size:13px;'>
+            <li><b>Name:</b></li>
+            <li><b>Level:</b></li>
+            <li><b>Exp:</b></li>
+            <li><b>Guild:</b></li>
+            <li><b>Guild Lvl:</b></li>
+            </ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:75px;top:10px;font-size:13px;'><li><a href='javascript:profile("Antagonist");'>Antagonist</a></li><li id='lvlli'>26,419</li>
+            <li id='expli'>92,928/660,475</li>
+            <li id='gnameli'>Oppai</li>
+            <li><span id='glvlli'>100</span> (<span id='glvlpercent'>1.85</span>%)</li></ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:270px;top:10px;text-align:right;font-size:13px;'>
+            <li><b>Money:</b></li>
+            <li><b>Jade:</b></li>
+            <li><b>Tokens:</b></li>
+            <li><b>Rep.:</b></li>
+            <li><b>Rank:</b></li>
+            </ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:324px;top:10px;font-size:13px;'>
+            <li id='goldli'><span style='color:#FFFFFF'>159p</span> <span style='color:#FFCC33;'>26g</span> <span style='color:#CCCCCC;'>61s</span> <span style='color:#331100;'>90c</span></li>
+            <li id='jadeli'>1761</li>
+            <li id='tokenli'>197</li>
+            <li>20</li>
+            <li id='rankli'><a href='javascript:openpage(8,0);'>Demon</a></li>
+            </ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:470px;top:10px;text-align:right;font-size:13px;'>
+            <li><b>Diamonds:</b></li>
+            <li><b>Sapphires:</b></li>
+            <li><b>Rubies:</b></li>
+            <li><b>Emeralds:</b></li>
+            <li><b>Opals:</b></li>
+            </ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:540px;top:10px;font-size:13px;'>
+            <li id='diamondsli2'><span id = 'diamondsli'>777944</span> (0)</li>
+            <li id='sapphiresli2'><span id = 'sapphiresli'>513594</span> (0)</li>
+            <li id='rubiesli2'><span id = 'rubiesli'>505616</span> (0)</li>
+            <li id='emeraldsli2'><span id = 'emeraldsli'>501470</span> (0)</li>
+            <li id='opalsli2'><span id = 'opalsli'>639438</span> (0)</li>
+            </ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:615px;top:10px;text-align:right;font-size:13px;'>
+            <li><b>Health:</b></li>
+            <li><b>Attack:</b></li>
+            <li><b>Defence:</b></li>
+            <li><b>Accuracy:</b></li>
+            <li><b>Evasion:</b></li>
+            </ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:679px;top:10px;font-size:13px;'>
+            <li id='Healthli' title='+0 from Boosts<br />+0 from Guild Boosts<br />+315 from Jewellery'>3133</li>
+            <li id='Attackli' title='+1026 from Boosts<br />+0 from Guild Boosts<br />+1921 from Jewellery'>3112</li>
+            <li id='Defenceli' title='+0 from Boosts<br />+0 from Guild Boosts<br />+725 from Jewellery'>3073</li>
+            <li id='Accuracyli' title='+791 from Boosts<br />+1485 from Jewellery'>81.66%</li>
+            <li id='Evasionli' title='+248 from Boosts<br />+650 from Jewellery'>31.11%</li>
+            </ul>
+            <ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:770px;top:10px;text-align:right;font-size:13px;'>
+            <li><a href='javascript:openpage(1,0)'>Players Online: <span id='onlinecount'></span></a> | <a href='javascript:openpage(11);'>Problem?!</a></li>
+            <li><a href='javascript:openpage(2,1)'>Rankings</a> | <a href='javascript:openpage(3,0)'>Updates</a> | <a href='javascript:faq(0,"")'>FAQ</a></li>
+            <li>Chat: <a href='javascript:openpage(5,0);'>Commands</a> | <a href='javascript:openpage(4,0);'>Rules</a></li>
+            <li><a href='vote.php' target='_blank'>Vote</a> | <a href='http://lyrania2.wikispaces.com' target='_blank'>Wiki</a> | <a href='https://lyrania.co.uk/forum/' target='_blank'>Forum</a> | <a href='index.php'>Logout</a></li>
+
+            <li><a href='javascript:openpage(6,1)'>Purchase/Spend Tokens</a></li>
+            </ul>
+            </div>
+            <div id='main'>
+            <div id='bannerholder'>
+            <span style='float:right;font-size:15px;font-weight:bold;'><a href='javascript:closebanner();'><font color='#EEEEEE'>[X]</font></a></span><br /><br />
+            <div id='banner'></div>
+            </div>
+            <div style='text-align:center;font-weight:bold;' id='timer'><br />Action Timer: </div><br />
+            <span style='padding-left:255px;'>
+            <select id='mainnav' onchange='mainnav()'>
+            <option value='1'>Battle</option>
+            <option value='19'>Jade Temple</option>
+            <option value='3'>Market</option>
+            <option value='4'>Guild</option>
+			<option value='16'>Colosseum</option>
+            <option value='5'>Inventory</option>
+            <option value='15'>Casino</option>
+            <option value='13'>Dungeon Shop</option>
+            <option value='6'>Crafting</option>
+            <option value='7'>Tradeskills</option>
+            <option value='8'>Travel</option>
+            <option value='9'>Bosses</option>
+			<option value='18'>Housing</option>
+			<option value='17'>Chapel</option>
+            <option value='10'>Milestones</option>
+            <option value='11'>Settings</option>
+            <option value='12'>Log</option>
+			<option value='21'>Pets</option>
+            </select>
+            </span>
+            <div id='content'>
+            </div>
+            </div>
+            <div id='side1'>
+            <div id='tstimer' style='font-size:12px;padding-left:5px;'>
+            <br />
+            <b>Current TS Jobs:</b><br />
+            <span id='tsjob1'><a href='javascript:tradeskills(0);' style='color:#FF0000;'><b>NONE</b></a></span><span id='tsjob2'></span><span id='tsjob3'></span><span id='tsjob4'></span></div><br /><br /><a href='javascript:post(1);' id='unreadmail' style='font-size:13px;margin-left:5px;'>Unread Mail: 0</a><br /><a href='javascript:support(1);' id='opentickets' style='font-size:13px;margin-left:5px;'>Open Support Tickets: 0</a><br /><span style='font-size:13px;margin-left:5px;'>House Workers: <span id='housetimer'>-652:44</span><script type='text/javascript'>housetimer(-39076);</script></span><div id='sidecounter'>
+            Total Kills: <span id='killscount'>2,091,650</span><br />
+            Quests Completed: <span id='questcount'>507</span><br />
+            Prize Tickets: <span id='ticketcount'>0</span><br />
+            </div>
+            <div id='questtracker'><a href='javascript:quest(0,0);' style='text-decoration:none;'>
+            Quest Number: 508<br />Collect 2354 Peculiaritys from Ankylosauruss<br />
+            Progress: <span id='questupdateid'>1797/2354 (557 to go)</span>
+            </a></div>
+            </div>
+            <div id='side2'>
+            <div id='equipment'>
+            <h3 style='padding-left:35px;'>Equipment</h3>
+            <ul style='list-style:none;margin:0;padding:0;position:absolute;left:0;text-align:right;font-weight:bold;'>
+            <li>W1:</li>
+            <li>W2:</li>
+            <li>A1:</li>
+            <li>A2:</li>
+            <li>A3:</li>
+            <li>A4:</li>
+            <li>A5:</li>
+            <li>A6:</li>
+            <li>A7:</li>
+            </ul><ul style='display:inline;list-style:none;margin:0;padding:0;position:absolute;left:25px;width:200px;text-align:left;'>
+            <li id='equip1'><a href='javascript:equip(1);'>Decent Gaiamantite [190]</a></li>
+            <li id='equip2'><a href='javascript:equip(2);'>Decent Gaiamantite [190]</a></li>
+            <li id='equip3'><a href='javascript:equip(3);'>Decent Tenacious [137]</a></li>
+            <li id='equip4'><a href='javascript:equip(4);'>Decent Tenacious [136]</a></li>
+            <li id='equip5'><a href='javascript:equip(5);'>Decent Tenacious [136]</a></li>
+            <li id='equip6'><a href='javascript:equip(6);'>Decent Tenacious [136]</a></li>
+            <li id='equip7'><a href='javascript:equip(7);'>Decent Tenacious [136]</a></li>
+            <li id='equip8'><a href='javascript:equip(8);'>Decent Tenacious [136]</a></li>
+            <li id='equip9'><a href='javascript:equip(9);'>Decent Tenacious [136]</a></li>
+            </ul>
+            </div>
+            <div id='equipstuff'></div>
+            </div>
+            <div id='chat'>
+            <select id='chatchannel'><option value='0' selected='selected'>Main</option><option value='l'>GamesRoom</option><option value='g'>Guild</option><option value='t'>Trade</option><option value='au'>Auction</option><option value='a'>Area</option><option value='1'>Brains</option></select>
+            <input type='text' name='inputchat' id='inputchat' onfocus='chatfocused=1;' onblur='chatfocused=0;' onkeyup='keyup(event.keyCode);' />
+            <input type='button' name='chatbutton' id='chatbutton' value='Chat' onclick='sortchat();' /> <span id='dnd'></span> <input type='button' id='mainchatbutton' title='Main Chat' style='width:10px;height:10px;border-style:solid;border-color:black;border-width:1px;background-image: none;background-color:#FFFFFF;' onclick='commands("killchat");'></input> <input type='button' id='Litechatbutton' title='GamesRoom' style='width:10px;height:10px;border-style:solid;border-color:black;border-width:1px;background-image: none;background-color:#32cd80;' onclick='commands("gamesroom");'></input> <input type='button' id='tradechatbutton' title='Trade' style='width:10px;height:10px;border-style:solid;border-color:black;border-width:1px;background-image: none;background-color:#FFCC33;' onclick='commands("trade");'></input> <input type='button' id='auctionchatbutton' title='Auction' style='width:10px;height:10px;border-style:solid;border-color:black;border-width:1px;background-image: none;background-color:#CCCC33;' onclick='commands("auction");'></input> <input type='button' id='pubchatbutton' title='Pub' style='width:10px;height:10px;border-style:solid;border-color:black;border-width:1px;background-image: none;background-color:#000000;' onclick='commands("pub");'></input> <input type='button' id='areachatbutton' title='Area' style='width:10px;height:10px;border-style:solid;border-color:black;border-width:1px;background-image: none;background-color:#FFAAAA;' onclick='commands("area");'></input> <input type='button' id='globalschatbutton' title='Globals' style='width:10px;height:10px;border-style:solid;border-color:black;border-width:1px;background-image: none;background-color:#33CCFF;' onclick='commands("killglobals");'></input><div id='chatwindow' wrap='virtual'></div>
+			<div id='schemediv2'></div>
+            </div>
+            </div>
+			<div id='musicboxbox' style='display:none;'></div>
+			<div id='schemediv3'></div>
+			<div id='schemediv4'></div>
+			<div id='schemediv5'></div>
+              <script>
+                var online_interval = setInterval(function() { online(); },10000);
+
+              </script>
+            </body>
+            </html>
