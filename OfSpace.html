@@ -2,8 +2,18 @@
 <html>
   <head>
     <title>OfSpace</title>
+  <link rel="stylesheet" type="text/css" href="style-sign.css">
   </head>
-  <body>
-    <p>Hello world!</p>
+  <body id="body-color">
+    <p>This is where the Registration, Login, and Game Brief goes</p>
+    <div id="Sign-In">
+      <fieldset style="width:30%"><legend>Log-In Here</legend>
+        <form method="POST" action="connectivity.php">
+          User <br><input type="text" name="user" size="20"><br>
+          Password <br><input type="password" name="pass" size="20"><br>
+          <input id="button" type="submit" name="submit" value="Log-In">
+        </form>
+      </fieldset>
+    </div>
   </body>
 </html>
