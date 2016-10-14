@@ -3,6 +3,11 @@
   <head>
     <title>OfSpace</title>
   <link rel="stylesheet" type="text/css" href="style-sign.css">
+  <style>
+  #body-color{
+    background-color: #6699CC;
+  }
+  </style>
   </head>
   <body id="body-color">
     <p>This is where the Registration, Login, and Game Brief goes</p>
@@ -12,6 +17,18 @@
           User <br><input type="text" name="user" size="20"><br>
           Password <br><input type="password" name="pass" size="20"><br>
           <input id="button" type="submit" name="submit" value="Log-In">
+        </form>
+      </fieldset>
+    </div>
+    <div id="Registration">
+      <fieldset style="width:30%"><legend>Register Here</legend>
+        <form method="POST" action="connectivity.php">
+          User <br><input type="text" name="user" size="20"><br>
+          Password <br><input type="password" name="pass" size="20"><br>
+          E-mail <br><input type="text" name="email" size="40"><br>
+          Re-type E-mail <br><input type="text" name="confirmation" size="40"><br>
+          Referral ID (optional) <br><input type="text" name="refId" size="6"><br>
+          <input id="button" type="submit" name="submit" value="Register">
         </form>
       </fieldset>
     </div>
